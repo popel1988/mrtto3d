@@ -19,7 +19,7 @@ Diese Webanwendung ermöglicht die Konvertierung von MRT-Bildern (DICOM) in 3D-M
 ### Installation und Start
 
 1. Repository klonen:
-git clone https://github.com/username/mrt-3d-konverter.git
+git clone https://github.com/popel1988/mrtto3d
 cd mrt-3d-konverter
 2. Docker-Container starten:
 docker-compose up -d
@@ -35,7 +35,7 @@ docker-compose up -d
 ### Installation
 
 1. Repository klonen:
-git clone https://github.com/username/mrt-3d-konverter.git
+git clone https://github.com/popel1988/mrtto3d
 cd mrt-3d-konverter
 2. Virtuelle Umgebung erstellen und aktivieren:
 python -m venv venv
