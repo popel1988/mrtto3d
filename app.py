@@ -5,6 +5,8 @@ import tempfile
 import uuid
 import shutil
 from processing import process_dicom_to_3d
+from PIL import Image
+import io
 
 app = Flask(__name__, static_folder='static', template_folder='templates')
 app.config['UPLOAD_FOLDER'] = 'uploads'
@@ -32,16 +34,37 @@ def upload_files():
     filter_type = request.form.get('filter_type', 'gaussian')
     sigma = float(request.form.get('sigma', 1.0))
     
+    # Größenparameter aus dem Formular holen
+    target_size = request.form.get('size', None)
+    
     # Temporäres Verzeichnis für die DICOM-Dateien erstellen
     session_id = str(uuid.uuid4())
     temp_dir = os.path.join(app.config['UPLOAD_FOLDER'], session_id)
     os.makedirs(temp_dir, exist_ok=True)
     
-    # Dateien speichern
+    # Dateien speichern und bei Bedarf resizen
+    image_sizes = set()
     for file in files:
         if file.filename:
             filename = secure_filename(file.filename)
-            file.save(os.path.join(temp_dir, filename))
+            file_path = os.path.join(temp_dir, filename)
+            
+            # Datei zuerst speichern
+            file.save(file_path)
+            
+            # Bildgröße erfassen (falls es sich um ein Bild handelt)
+            try:
+                with Image.open(file_path) as img:
+                    image_sizes.add(f"{img.width}x{img.height}")
+                    
+                    # Resize, falls eine Zielgröße angegeben wurde
+                    if target_size:
+                        width, height = map(int, target_size.split('x'))
+                        img = img.resize((width, height), Image.LANCZOS)
+                        img.save(file_path)
+            except Exception:
+                # Keine Bildverarbeitung für Nicht-Bild-Dateien
+                pass
     
     try:
         # 3D-Modell erstellen
@@ -62,7 +85,8 @@ def upload_files():
             'success': True,
             'session_id': session_id,
             'preview_url': f"/preview/{session_id}",
-            'download_url': f"/download/{session_id}"
+            'download_url': f"/download/{session_id}",
+            'available_sizes': list(image_sizes)
         })
     except Exception as e:
         return jsonify({'error': str(e)}), 500
@@ -83,6 +107,24 @@ def download(session_id):
     if os.path.exists(output_file):
         return send_file(output_file, as_attachment=True, download_name="3d_model.stl")
     return jsonify({'error': '3D-Modell nicht gefunden'}), 404
+
+# Neue Route zum Anzeigen verfügbarer Bildgrößen
+@app.route('/available-sizes', methods=['GET'])
+def get_available_sizes():
+    # Standard-Größen
+    sizes = ['400x300', '800x600', '1024x768']
+    
+    # Durchsuche vorhandene Bilder nach Größen
+    for session_id in os.listdir(app.config['MODELS_FOLDER']):
+        if session_id.endswith('_preview.png'):
+            preview_path = os.path.join(app.config['MODELS_FOLDER'], session_id)
+            try:
+                with Image.open(preview_path) as img:
+                    sizes.append(f"{img.width}x{img.height}")
+            except Exception:
+                pass
+    
+    return jsonify({'sizes': list(set(sizes))})
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)
