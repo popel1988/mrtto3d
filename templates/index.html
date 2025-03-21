@@ -76,7 +76,55 @@
                         </form>
                     </div>
                 </div>
-                
+
+                                <div class="card mb-4">
+                     <div class="card-header">
+                         <h2>Status</h2>
+                     </div>
+                     <div class="card-body">
+                         <div id="status-container">
+                             <div class="alert alert-info">Bereit zum Hochladen von DICOM-Dateien.</div>
+                         </div>
+                         <div id="progress-container" class="d-none">
+                             <div class="progress mb-3">
+                                 <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 0%"></div>
+                             </div>
+                         </div>
+                     </div>
+                 </div>
+             </div>
+             
+             <div class="col-md-6">
+                 <div class="card mb-4">
+                     <div class="card-header">
+                         <h2>Vorschau und Download</h2>
+                     </div>
+                     <div class="card-body text-center">
+                         <div id="preview-container">
+                             <p class="text-muted">Hier erscheint die Vorschau des 3D-Modells nach der Verarbeitung.</p>
+                         </div>
+                         <div id="download-container" class="mt-3 d-none">
+                             <a id="download-link" href="#" class="btn btn-success">3D-Modell herunterladen (STL)</a>
+                         </div>
+                     </div>
+                 </div>
+                 <!-- Rest des Codes bleibt unverändert -->
+ 
+                 <div class="card">
+                     <div class="card-header">
+                         <h2>Hilfe</h2>
+                     </div>
+                     <div class="card-body">
+                         <h5>Tipps zur Verwendung:</h5>
+                         <ul>
+                             <li>Laden Sie alle DICOM-Dateien einer MRT-Serie hoch.</li>
+                             <li>Passen Sie die Schwellenwerte an, um verschiedene Gewebe zu segmentieren.</li>
+                             <li>Niedrigere Schwellenwerte erfassen mehr Gewebe, höhere Schwellenwerte sind selektiver.</li>
+                             <li>Der Gaussian-Filter kann Rauschen reduzieren, erhöht aber die Verarbeitungszeit.</li>
+                             <li>Das resultierende STL-Modell kann mit 3D-Druck-Software weiterverarbeitet werden.</li>
+                         </ul>
+                     </div>
+                 </div>
                 <!-- Rest des Codes bleibt unverändert -->
                 
             </div>
